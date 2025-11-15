@@ -27,10 +27,26 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         ESP_LOGI(TAG, "Subscribed to esp32/test");
         break;
 
+    case MQTT_EVENT_UNSUBSCRIBED:
+        ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED");
+        break;
+
+    case MQTT_EVENT_PUBLISHED:
+        ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
+        break;
+
     case MQTT_EVENT_DATA:
         ESP_LOGI(TAG, "Received data:");
         printf("Topic: %.*s\r\n", event->topic_len, event->topic);
         printf("Payload: %.*s\r\n", event->data_len, event->data);
+        break;
+
+    case MQTT_EVENT_ERROR:
+        ESP_LOGE(TAG, "MQTT_EVENT_ERROR");
+        if (event->error_handle->error_type == MQTT_ERROR_TYPE_ESP_TLS)
+        {
+            ESP_LOGE(TAG, "TLS/SSL error (esp_tls): 0x%08x", event->error_handle->esp_tls_last_esp_err);
+        }
         break;
 
     default:
