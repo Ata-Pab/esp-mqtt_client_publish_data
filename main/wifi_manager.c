@@ -19,7 +19,7 @@ static const char *TAG = "wifi_manager";
  */
 #define WIFI_SSID "xxxxxxxxxx"
 #define WIFI_PASS "xxxxxxxxxx"
-#define USE_TLS_CERTIFICATE_BUNDLE 0
+#define USE_TLS_CERTIFICATE_BUNDLE 1
 
 static SemaphoreHandle_t s_wifi_connected_sem = NULL;
 static bool s_is_connected = false;
