@@ -76,9 +76,17 @@ static void mqtt_publisher_task(void *pvParameters)
 
 void mqtt_app_start(void)
 {
+    /* Ensure Wi-Fi connected and time synced before starting TLS connection */
+    ESP_LOGI(TAG, "Waiting for Wi-Fi and time sync before MQTT...");
+    if (wifi_manager_wait_connected(pdMS_TO_TICKS(20000)) != pdTRUE)
+    {
+        ESP_LOGW(TAG, "Wi-Fi not ready after timeout — MQTT will still attempt but may fail.");
+    }
+
     const esp_mqtt_client_config_t mqtt_cfg = {
-        .broker.address.uri = "mqtt://broker.hivemq.com",
-    };
+        /* Use mqtts:// to force TLS and port 8883 */
+        .broker.address.uri = "mqtts://broker.hivemq.com",
+        .credentials.client_id = "ESP32_MQTT_TLS_CLIENT"};
 
     client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
