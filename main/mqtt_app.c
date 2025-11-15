@@ -4,6 +4,7 @@
 #include "mqtt_client.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "wifi_manager.h"
 
 static const char *TAG = "MQTT_APP";
 static esp_mqtt_client_handle_t client = NULL;
@@ -62,9 +63,12 @@ static void mqtt_publisher_task(void *pvParameters)
         if (client)
         {
             char payload[64];
-            snprintf(payload, sizeof(payload), "{\"device\":\"esp32\",\"counter\":%d}", counter++);
-            esp_mqtt_client_publish(client, "esp32/test", payload, 0, 0, 0);
-            ESP_LOGI(TAG, "Published: %s", payload);
+            int len = snprintf(payload, sizeof(payload), "{\"device\":\"esp32\",\"counter\":%d}", counter++);
+            if (len > 0)
+            {
+                int msg_id = esp_mqtt_client_publish(client, "esp32/test", payload, 0, 1, 0);
+                ESP_LOGI(TAG, "Published msg_id=%d payload=%s", msg_id, payload);
+            }
         }
         vTaskDelay(pdMS_TO_TICKS(5000)); // 5 sec
     }
