@@ -1,6 +1,7 @@
 #include "mqtt_app.h"
 #include "esp_log.h"
 #include "esp_event.h"
+#include "esp_crt_bundle.h"
 #include "mqtt_client.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -86,6 +87,7 @@ void mqtt_app_start(void)
     const esp_mqtt_client_config_t mqtt_cfg = {
         /* Use mqtts:// to force TLS and port 8883 */
         .broker.address.uri = "mqtts://broker.hivemq.com",
+        .broker.verification.crt_bundle_attach = esp_crt_bundle_attach, // Use certificate bundle for TLS
         .credentials.client_id = "ESP32_MQTT_TLS_CLIENT"};
 
     client = esp_mqtt_client_init(&mqtt_cfg);
